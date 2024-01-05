@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_CANDIDATES 5
+#define MAX_VOTERS 100
+
+struct Candidate {
+    int id;
+    char name[50];
+    int votes;
+};
+
+struct Voter {
+    int id;
+    int votedCandidateId;
+};
+
+struct Candidate candidates[MAX_CANDIDATES];
+struct Voter voters[MAX_VOTERS];
+
+int candidateCount = 0;
+int voterCount = 0;
+
+void addCandidate(char name[]) {
+    if (candidateCount < MAX_CANDIDATES) {
+        struct Candidate newCandidate;
+        newCandidate.id = candidateCount + 1;
+        strcpy(newCandidate.name, name);
+        newCandidate.votes = 0;
+
+        candidates[candidateCount++] = newCandidate;
+        printf("Candidate added successfully!\n");
+    } else {
+        printf("Max candidate limit reached.\n");
+    }
+}
+
+void displayCandidates() {
+    printf("Candidates:\n");
+    for (int i = 0; i < candidateCount; i++) {
+        printf("%d. %s\n", candidates[i].id, candidates[i].name);
+    }
+}
+
+void vote(int voterId, int candidateId) {
+    if (voterId < 1 || voterId > MAX_VOTERS) {
+        printf("Invalid voter ID.\n");
+        return;
+    }
+
+    if (voters[voterId - 1].votedCandidateId != 0) {
+        printf("Voter already cast a vote.\n");
+        return;
+    }
+
+    if (candidateId < 1 || candidateId > MAX_CANDIDATES) {
+        printf("Invalid candidate ID.\n");
+        return;
+    }
+
+    candidates[candidateId - 1].votes++;
+    voters[voterId - 1].votedCandidateId = candidateId;
+
+    printf("Vote cast successfully!\n");
+}
+
+void displayResults() {
+    printf("Election Results:\n");
+    for (int i = 0; i < candidateCount; i++) {
+        printf("%s: %d votes\n", candidates[i].name, candidates[i].votes);
+    }
+}
+
+int main() {
+    int choice;
+    char candidateName[50];
+
+    do {
+        printf("\n1. Add Candidate\n2. Display Candidates\n3. Vote\n4. Display Results\n5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter candidate name: ");
+                scanf("%s", candidateName);
+                addCandidate(candidateName);
+                break;
+            case 2:
+                displayCandidates();
+                break;
+            case 3:
+                int voterId, candidateId;
+                printf("Enter voter ID: ");
+                scanf("%d", &voterId);
+                printf("Enter candidate ID to vote: ");
+                scanf("%d", &candidateId);
+                vote(voterId, candidateId);
+                break;
+            case 4:
+                displayResults();
+                break;
+            case 5:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice. Try again.\n");
+        }
+
+    } while (choice != 5);
+
+    return 0;
+}
